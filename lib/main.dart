@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel_dart/excel_dart.dart';
+import 'package:gestion_pointages_app/screens/check_absence.dart';
 import 'package:gestion_pointages_app/utilities/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
@@ -22,6 +23,7 @@ class AttendanceTrackerApp extends StatelessWidget {
       title: 'Attendance Tracker',
       theme: appTheme,
       home: const AttendanceHomePage(),
+      // home: CheckAbsenceScreen(),
     );
   }
 }
@@ -84,7 +86,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
         String path = result.files.single.path!;
         await _saveBaseFilePath(path);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Base Excel file uploaded successfully.'), backgroundColor: Theme.of(context).primaryColor,),
+          SnackBar(
+            content: const Text('Base Excel file uploaded successfully.'),
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
         );
         print('Base Excel file uploaded: $path');
       }
@@ -100,7 +105,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
   Future<void> _uploadAttendanceFile() async {
     if (baseFilePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Please upload the base Excel file first.'), backgroundColor: Theme.of(context).primaryColor,),
+        SnackBar(
+          content: const Text('Please upload the base Excel file first.'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
       return;
     }
@@ -125,7 +133,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
     } catch (e) {
       print('Error uploading attendance file: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading attendance file: $e'), backgroundColor: Theme.of(context).primaryColor,),
+        SnackBar(
+          content: Text('Error uploading attendance file: $e'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     }
   }
@@ -140,7 +151,8 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
       // Read attendance text file
       File attendanceFile = File(path);
       List<String> lines = await attendanceFile.readAsLines();
-      print('Attendance file read successfully. Number of lines: ${lines.length}');
+      print(
+          'Attendance file read successfully. Number of lines: ${lines.length}');
 
       // Read base Excel file
       File baseFile = File(baseFilePath!);
@@ -185,10 +197,14 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
 
           // Add new student to baseExcel
           int newRowIndex = baseSheet.maxRows;
-          baseSheet.cell(CellIndex.indexByString("A${newRowIndex + 1}")).value = id;
-          baseSheet.cell(CellIndex.indexByString("B${newRowIndex + 1}")).value = newStudent['Nom'];
-          baseSheet.cell(CellIndex.indexByString("C${newRowIndex + 1}")).value = newStudent['Prénom'];
-          baseSheet.cell(CellIndex.indexByString("D${newRowIndex + 1}")).value = newStudent['Promotion'];
+          baseSheet.cell(CellIndex.indexByString("A${newRowIndex + 1}")).value =
+              id;
+          baseSheet.cell(CellIndex.indexByString("B${newRowIndex + 1}")).value =
+              newStudent['Nom'];
+          baseSheet.cell(CellIndex.indexByString("C${newRowIndex + 1}")).value =
+              newStudent['Prénom'];
+          baseSheet.cell(CellIndex.indexByString("D${newRowIndex + 1}")).value =
+              newStudent['Promotion'];
 
           // Update studentMap
           studentMap[id] = newStudent;
@@ -217,7 +233,8 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
         } else {
           // Create new promotion Excel file
           promotionExcel = Excel.createExcel();
-          promotionExcel.delete(promotionExcel.tables.keys.first); // Remove default sheet
+          promotionExcel
+              .delete(promotionExcel.tables.keys.first); // Remove default sheet
           print('Promotion Excel file created: $promotionFilePath');
         }
 
@@ -249,9 +266,11 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
         if (!isDuplicate) {
           // Append the attendance row
           dateSheet.appendRow(attendanceRow);
-          print('Attendance record added to sheet $sanitizedDate: $attendanceRow');
+          print(
+              'Attendance record added to sheet $sanitizedDate: $attendanceRow');
         } else {
-          print('Duplicate attendance record found for ID: $id at Heure: $heure. Skipping.');
+          print(
+              'Duplicate attendance record found for ID: $id at Heure: $heure. Skipping.');
         }
 
         // Save the promotion Excel file after each record
@@ -278,7 +297,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Attendance processed successfully.'), backgroundColor: Theme.of(context).primaryColor,),
+        SnackBar(
+          content: const Text('Attendance processed successfully.'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     } catch (e) {
       setState(() {
@@ -286,7 +308,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
       });
       print('Error processing attendance: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing attendance: $e'), backgroundColor: Theme.of(context).primaryColor,),
+        SnackBar(
+          content: Text('Error processing attendance: $e'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     }
   }
@@ -352,14 +377,17 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
                     nom!.isNotEmpty &&
                     prenom!.isNotEmpty &&
                     promotion!.isNotEmpty) {
-                  Navigator.of(context).pop({
+                  Navigator.of(context).pop<Map<String, String>>({
                     'Nom': nom!,
                     'Prénom': prenom!,
                     'Promotion': promotion!,
                   });
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: const Text('All fields are required.'), backgroundColor: Theme.of(context).primaryColor,),
+                    SnackBar(
+                      content: const Text('All fields are required.'),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
                   );
                 }
               },
@@ -371,141 +399,156 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
   }
 
   // Search Functionality
-Future<void> _searchStudent() async {
-  String searchId = _searchIdController.text.trim();
-  String searchDate = _searchDateController.text.trim();
+  Future<void> _searchStudent() async {
+    String searchId = _searchIdController.text.trim();
+    String searchDate = _searchDateController.text.trim();
 
-  if (searchId.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: const Text('Please enter a Student ID to search.'), backgroundColor: Theme.of(context).primaryColor),
-    );
-    return;
-  }
-
-  if (baseFilePath == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: const Text('Base Excel file not found.'), backgroundColor: Theme.of(context).primaryColor),
-    );
-    return;
-  }
-
-  setState(() {
-    isProcessing = true;
-  });
-
-  try {
-    // Read base Excel file
-    File baseFile = File(baseFilePath!);
-    List<int> baseBytes = await baseFile.readAsBytes();
-    Excel baseExcel = Excel.decodeBytes(baseBytes);
-    Sheet baseSheet = baseExcel.tables.values.first; // Assuming first sheet
-
-    // Find student in base file
-    Map<String, dynamic>? student;
-    for (var row in baseSheet.rows) {
-      if (row.length < 4) continue; // Ensure there are enough columns
-      String id = row[0]?.value.toString() ?? '';
-      if (id == searchId) {
-        student = {
-          'ID': id,
-          'Nom': row[1]?.value.toString() ?? '',
-          'Prénom': row[2]?.value.toString() ?? '',
-          'Promotion': row[3]?.value.toString() ?? '',
-        };
-        break;
-      }
-    }
-
-    if (student == null) {
-      setState(() {
-        isProcessing = false;
-      });
+    if (searchId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Student with ID $searchId not found in the base file.'),backgroundColor: Theme.of(context).primaryColor,),
+        SnackBar(
+            content: const Text('Please enter a Student ID to search.'),
+            backgroundColor: Theme.of(context).primaryColor),
       );
       return;
     }
 
-    // If date is provided, search in promotion-specific Excel file
-    List<String> attendanceHours = []; // List to hold multiple attendance records
-    if (searchDate.isNotEmpty) {
-      String promotion = student['Promotion'];
-      Directory appDir = await getApplicationDocumentsDirectory();
-      String promotionFileName = '$promotion.xlsx';
-      String promotionFilePath = p.join(appDir.path, promotionFileName);
-      File promotionFile = File(promotionFilePath);
+    if (baseFilePath == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: const Text('Base Excel file not found.'),
+            backgroundColor: Theme.of(context).primaryColor),
+      );
+      return;
+    }
 
-      if (promotionFile.existsSync()) {
-        Excel promotionExcel = Excel.decodeBytes(await promotionFile.readAsBytes());
-        String sanitizedDate = safeSheetName(searchDate);
-        Sheet? dateSheet = promotionExcel[sanitizedDate];
+    setState(() {
+      isProcessing = true;
+    });
 
-        if (dateSheet != null) {
-          for (var row in dateSheet.rows) {
-            if (row.length < 5) continue;
-            String id = row[0]?.value.toString() ?? '';
-            String heure = row[4]?.value.toString() ?? '';
-            if (id == searchId) {
-              attendanceHours.add(heure); // Collecting all hours
+    try {
+      // Read base Excel file
+      File baseFile = File(baseFilePath!);
+      List<int> baseBytes = await baseFile.readAsBytes();
+      Excel baseExcel = Excel.decodeBytes(baseBytes);
+      Sheet baseSheet = baseExcel.tables.values.first; // Assuming first sheet
+
+      // Find student in base file
+      Map<String, dynamic>? student;
+      for (var row in baseSheet.rows) {
+        if (row.length < 4) continue; // Ensure there are enough columns
+        String id = row[0]?.value.toString() ?? '';
+        if (id == searchId) {
+          student = {
+            'ID': id,
+            'Nom': row[1]?.value.toString() ?? '',
+            'Prénom': row[2]?.value.toString() ?? '',
+            'Promotion': row[3]?.value.toString() ?? '',
+          };
+          break;
+        }
+      }
+
+      if (student == null) {
+        setState(() {
+          isProcessing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Student with ID $searchId not found in the base file.'),
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+        );
+        return;
+      }
+
+      // If date is provided, search in promotion-specific Excel file
+      List<String> attendanceHours =
+          []; // List to hold multiple attendance records
+      if (searchDate.isNotEmpty) {
+        String promotion = student['Promotion'];
+        Directory appDir = await getApplicationDocumentsDirectory();
+        String promotionFileName = '$promotion.xlsx';
+        String promotionFilePath = p.join(appDir.path, promotionFileName);
+        File promotionFile = File(promotionFilePath);
+
+        if (promotionFile.existsSync()) {
+          Excel promotionExcel =
+              Excel.decodeBytes(await promotionFile.readAsBytes());
+          String sanitizedDate = safeSheetName(searchDate);
+          Sheet? dateSheet = promotionExcel[sanitizedDate];
+
+          if (dateSheet != null) {
+            for (var row in dateSheet.rows) {
+              if (row.length < 5) continue;
+              String id = row[0]?.value.toString() ?? '';
+              String heure = row[4]?.value.toString() ?? '';
+              if (id == searchId) {
+                attendanceHours.add(heure); // Collecting all hours
+              }
             }
           }
         }
       }
-    }
 
-    setState(() {
-      isProcessing = false;
-    });
+      setState(() {
+        isProcessing = false;
+      });
 
-    // Display the results
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Search Results', textAlign: TextAlign.center,),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('ID: ${student!['ID']}'),
-              Text('Nom: ${student['Nom']}'),
-              Text('Prénom: ${student['Prénom']}'),
-              Text('Promotion: ${student['Promotion']}'),
-              if (searchDate.isNotEmpty)
-                if (attendanceHours.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Hours on $searchDate:'),
-                      ...attendanceHours.map((heure) => Text(heure)).toList(),
-                    ],
-                  )
-                else
-                  Text('No attendance record found on $searchDate.'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+      // Display the results
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Search Results',
+              textAlign: TextAlign.center,
             ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    setState(() {
-      isProcessing = false;
-    });
-    print('Error during search: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error during search: $e'), backgroundColor: Theme.of(context).primaryColor,),
-    );
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('ID: ${student!['ID']}'),
+                Text('Nom: ${student['Nom']}'),
+                Text('Prénom: ${student['Prénom']}'),
+                Text('Promotion: ${student['Promotion']}'),
+                if (searchDate.isNotEmpty)
+                  if (attendanceHours.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Hours on $searchDate:'),
+                        ...attendanceHours.map((heure) => Text(heure)).toList(),
+                      ],
+                    )
+                  else
+                    Text('No attendance record found on $searchDate.'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      setState(() {
+        isProcessing = false;
+      });
+      print('Error during search: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error during search: $e'),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -534,7 +577,8 @@ Future<void> _searchStudent() async {
               trailing: ElevatedButton(
                 style: ButtonStyle(
                   foregroundColor: const WidgetStatePropertyAll(Colors.white),
-                  backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                  backgroundColor:
+                      WidgetStatePropertyAll(Theme.of(context).primaryColor),
                 ),
                 onPressed: _uploadBaseFile,
                 child: const Text('Upload Base File'),
@@ -549,10 +593,30 @@ Future<void> _searchStudent() async {
               trailing: ElevatedButton(
                 style: ButtonStyle(
                   foregroundColor: const WidgetStatePropertyAll(Colors.white),
-                  backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                  backgroundColor:
+                      WidgetStatePropertyAll(Theme.of(context).primaryColor),
                 ),
                 onPressed: isProcessing ? null : _uploadAttendanceFile,
                 child: const Text('Upload Attendance File'),
+              ),
+            ),
+            const Divider(),
+            ListTile(
+              trailing: ElevatedButton(
+                style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                  backgroundColor: WidgetStatePropertyAll(Color(0xFF6F35A5)),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CheckAbsenceScreen()),
+                  );
+                },
+                child: const Text(
+                  "Check Absence",
+                ),
               ),
             ),
             const Divider(),
@@ -585,9 +649,10 @@ Future<void> _searchStudent() async {
             // Search Button
             ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor: const WidgetStatePropertyAll(Colors.white),
-                  backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
-                ),
+                foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                backgroundColor:
+                    WidgetStatePropertyAll(Theme.of(context).primaryColor),
+              ),
               onPressed: isProcessing ? null : _searchStudent,
               child: const Text('Search'),
             ),
