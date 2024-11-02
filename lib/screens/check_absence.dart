@@ -58,28 +58,27 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
     final baseExcel = Excel.decodeBytes(baseFile.readAsBytesSync());
     final allStudents = <String, String>{}; // Map of student ID to name
 
-    // Assuming student data is in a sheet called 'Feuil1' in the base file
-    if (baseExcel.tables.containsKey('Feuil1')) {
-      for (var row in baseExcel.tables['Feuil1']!.rows) {
-        String id = row[0]?.value ?? ''; // ID in column A
-        String name = "${row[1]?.value ?? ''} ${row[2]?.value ?? ''}"; // Name in columns B and C
-        String promotion = row[3]?.value ?? ''; // Promotion in column D
+    // Assuming student data is in the first sheet in the base file
+    for (var row in baseExcel.tables.values.single.rows) {
+      String id = "${row[0]?.value ?? ''}"; // ID in column A
+      String name =
+          "${row[1]?.value ?? ''} ${row[2]?.value ?? ''}"; // Name in columns B and C
+      String promotion = row[3]?.value ?? ''; // Promotion in column D
 
-        // Check if the promotion matches the selected promotion from the dropdown
-        if (id.isNotEmpty && name.trim().isNotEmpty && promotion == selectedPromotion) {
-          allStudents[id] = name;
-        }
+      // Check if the promotion matches the selected promotion from the dropdown
+      if (id.isNotEmpty &&
+          name.trim().isNotEmpty &&
+          promotion == selectedPromotion) {
+        allStudents[id] = name;
       }
-    } else {
-      print("No 'Feuil1' sheet found in the base file.");
-      return;
     }
 
     // Load the selected promotion file and sheet for the selected date
     final promotionExcel = Excel.decodeBytes(promotionFile.readAsBytesSync());
     String? sheetName;
     if (selectedDate != null) {
-      sheetName = "${selectedDate!.year}_${selectedDate!.month}_${selectedDate!.day}";
+      sheetName =
+          "${selectedDate!.year}_${selectedDate!.month}_${selectedDate!.day}";
     }
 
     if (sheetName != null && promotionExcel.tables.containsKey(sheetName)) {
@@ -108,12 +107,17 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Check Absences",), centerTitle: true,),
+      appBar: AppBar(
+        title: const Text(
+          "Check Absences",
+        ),
+        centerTitle: true,
+      ),
       body: FutureBuilder<List<String>>(
         future: _getPromotionFiles(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -121,7 +125,7 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text("No promotion files found."));
+            return const Center(child: Text("No promotion files found."));
           }
 
           List<String> promotionFiles = snapshot.data!;
@@ -131,10 +135,14 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Select Promotion", style: TextStyle(fontSize: 18)),
+                const Text("Select Promotion", style: TextStyle(fontSize: 18)),
                 DropdownButton<String>(
                   focusColor: Colors.white,
-                  hint: const Text("Choose a promotion", style: TextStyle(color: Color(0xFF6F35A5), fontWeight: FontWeight.w900),),
+                  hint: const Text(
+                    "Choose a promotion",
+                    style: TextStyle(
+                        color: Color(0xFF6F35A5), fontWeight: FontWeight.w900),
+                  ),
                   value: selectedPromotion,
                   items: promotionFiles.map((promotion) {
                     return DropdownMenuItem<String>(
@@ -150,8 +158,8 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 16),
-                Text("Select Date", style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 16),
+                const Text("Select Date", style: TextStyle(fontSize: 18)),
                 TextButton(
                   style: const ButtonStyle(
                     foregroundColor: WidgetStatePropertyAll(Color(0xFF6F35A5)),
@@ -173,10 +181,16 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                       });
                     }
                   },
-                  child: Text(selectedDate == null
-                      ? "Pick a date"
-                      : "Selected Date: ${selectedDate!.toLocal()}"
-                          .split(' ')[0], style: const TextStyle(backgroundColor: Colors.white, color: Color(0xFF6F35A5), fontWeight: FontWeight.w900),),
+                  child: Text(
+                    selectedDate == null
+                        ? "Pick a date"
+                        : "Selected Date: ${selectedDate!.toLocal()}"
+                            .split(' ')[0],
+                    style: const TextStyle(
+                        backgroundColor: Colors.white,
+                        color: Color(0xFF6F35A5),
+                        fontWeight: FontWeight.w900),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -189,20 +203,21 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                       checkAbsences();
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text("Please select a promotion and a date.")),
+                        const SnackBar(
+                            content:
+                                Text("Please select a promotion and a date.")),
                       );
                     }
                   },
-                  child: Text("Check Absences"),
+                  child: const Text("Check Absences"),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 if (message != null) // Display message if there is one
                   Text(
                     message!,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 if (absentStudents.isNotEmpty)
                   Expanded(
                     child: ListView.builder(
@@ -211,7 +226,7 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                         final student = absentStudents[index];
                         return Card(
                           elevation: 2,
-                          margin: EdgeInsets.symmetric(vertical: 8),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -219,9 +234,11 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                               children: [
                                 Text(
                                   student['Name']!,
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text("ID: ${student['ID']!}"),
                               ],
                             ),

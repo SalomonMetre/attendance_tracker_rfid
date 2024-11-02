@@ -502,23 +502,45 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
           return AlertDialog(
             title: const Text(
               'Search Results',
+              style: TextStyle(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('ID: ${student!['ID']}'),
-                Text('Nom: ${student['Nom']}'),
-                Text('Prénom: ${student['Prénom']}'),
-                Text('Promotion: ${student['Promotion']}'),
+                Row(
+                  children: [
+                    const Text('ID: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                    Text('${student!['ID']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Text('Nom: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                    Text('${student['Nom']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Text('Prénom: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                    Text('${student['Prénom']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Text('Promotion: ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                    Text('${student['Promotion']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),),
+                  ],
+                ),
+                const SizedBox(height: 32,),
                 if (searchDate.isNotEmpty)
                   if (attendanceHours.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Hours on $searchDate:'),
-                        ...attendanceHours.map((heure) => Text(heure)).toList(),
+                        Text('Hours on $searchDate:', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),),
+                        ...attendanceHours.map((heure) => Text(heure, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.green),)),
                       ],
                     )
                   else
@@ -527,6 +549,10 @@ class _AttendanceHomePageState extends State<AttendanceHomePage> {
             ),
             actions: [
               TextButton(
+                style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                  backgroundColor: WidgetStatePropertyAll(Color(0xFF6F35A5)),
+                ),
                 child: const Text('Close'),
                 onPressed: () {
                   Navigator.of(context).pop();
