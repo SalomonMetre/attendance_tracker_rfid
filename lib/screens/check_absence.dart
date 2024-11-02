@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:excel_dart/excel_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -229,18 +232,30 @@ class _CheckAbsenceScreenState extends State<CheckAbsenceScreen> {
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  student['Name']!,
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 4),
-                                Text("ID: ${student['ID']!}"),
-                              ],
+                            child: ListTile(
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    student['Name']!,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text("ID: ${student['ID']!}"),
+                                ],
+                              ),
+                              trailing: ElevatedButton(
+                                onPressed: () async {
+                                  await Clipboard.setData(
+                                      ClipboardData(text: "${student['ID']}"));
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        content: Text("ID ${student['ID']} of ${student['Name']} copied to clipboard !",), backgroundColor: Theme.of(context).primaryColor,),
+                                      );
+                                },
+                                child: const Icon(Icons.copy),
+                              ),
                             ),
                           ),
                         );
